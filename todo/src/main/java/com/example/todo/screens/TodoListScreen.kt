@@ -150,12 +150,3 @@ fun TodoAction(modifier: Modifier = Modifier, todo: Todo, isComplete: Boolean, u
     }
 }
 
-
-class MyViewModelFactory(val app: Application) : ViewModelProvider.AndroidViewModelFactory(){
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(MyViewModel::class.java))
-            return modelClass as T
-        else
-            throw IllegalArgumentException()
-    }
-}
