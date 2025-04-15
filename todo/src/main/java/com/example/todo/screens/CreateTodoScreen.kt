@@ -27,18 +27,23 @@ import com.example.todo.data.AppDatabase
 import com.example.todo.data.entity.Todo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun CreateTodoScreen(navigateToList: () -> Unit= {}) {
+fun CreateTodoScreen(
+    todo: Todo? = null,
+    createTodo: (Todo) -> Unit = {},
+    navigateToList: () -> Unit = {},
+) {
     val context = LocalContext.current
 
     val scope = rememberCoroutineScope()
 
 
-    var title by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("")}
+    var title by remember { mutableStateOf(todo?.title ?: "") }
+    var content by remember { mutableStateOf(todo?.content ?: "") }
 
     Column(
         Modifier
@@ -52,13 +57,13 @@ fun CreateTodoScreen(navigateToList: () -> Unit= {}) {
         Spacer(Modifier.size(30.dp))
         OutlinedTextField(
             value = title,
-            onValueChange = { title = it},
+            onValueChange = { title = it },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("title") })
         Spacer(Modifier.size(20.dp))
         OutlinedTextField(
             value = content,
-            onValueChange = { content = it},
+            onValueChange = { content = it },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Content") },
             maxLines = 10,
@@ -66,12 +71,12 @@ fun CreateTodoScreen(navigateToList: () -> Unit= {}) {
         )
         Spacer(Modifier.size(50.dp))
         OutlinedButton(onClick = {
-            scope.launch(Dispatchers.Default) {
-                val db = AppDatabase.getInstance(context.applicationContext)
-                db.userDao().upsert(Todo(title = title, content = content))
+            scope.launch {
+                createTodo((Todo(title = title, content = content)))
+                navigateToList()
             }
         }) {
-            Text("Create")
+            Text(if (todo != null) "Update" else "Create")
         }
 
 

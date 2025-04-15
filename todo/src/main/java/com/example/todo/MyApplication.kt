@@ -11,7 +11,7 @@ class MyApplication : Application() {
     }
     override fun onCreate() {
         super.onCreate()
-        database = AppDatabase.getInstance(this@MyApplication.applicationContext)
+        database = AppDatabase.getInstance(this)
 
     }
 }

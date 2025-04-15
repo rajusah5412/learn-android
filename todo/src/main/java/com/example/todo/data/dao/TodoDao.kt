@@ -10,7 +10,7 @@ import com.example.todo.data.entity.Todo
 @Dao
 interface TodoDao {
     @Query("SELECT * FROM todo")
-    fun getAll(): List<Todo>
+    suspend fun getAll(): List<Todo>
 
 //    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
 //    fun loadAllByIds(userIds: IntArray): List<User>
@@ -22,10 +22,10 @@ interface TodoDao {
     fun findById(id: Int): Todo
 
     @Upsert
-    fun upsert(todo: Todo)
+    suspend fun upsert(todo: Todo)
 
     @Delete
-    fun delete(todo: Todo)
+    suspend fun delete(todo: Todo)
 }
 
 

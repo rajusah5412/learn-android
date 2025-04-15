@@ -10,25 +10,25 @@ import com.example.todo.data.entity.DateConverter
 import com.example.todo.data.entity.Todo
 
 @TypeConverters(DateConverter::class)
-@Database(entities = [Todo::class], version = 2)
+@Database(entities = [Todo::class], version = 2, exportSchema = false)
 abstract class AppDatabase() : RoomDatabase() {
-    abstract fun userDao(): TodoDao
+    abstract fun todoDao(): TodoDao
 
     companion object{
         private var INSTANCE : AppDatabase? = null
 
         fun getInstance(context: Context): AppDatabase {
-            if(INSTANCE == null){
+           return if(INSTANCE == null){
                INSTANCE = Room.databaseBuilder(
                     context,
                     AppDatabase::class.java,
                     "todo.db"
                 )
-                    .fallbackToDestructiveMigration()
+                   .fallbackToDestructiveMigration(true)
                     .build()
-                return INSTANCE!!;
+               INSTANCE!!;
             }else{
-                return INSTANCE!!
+                INSTANCE!!
             }
         }
     }

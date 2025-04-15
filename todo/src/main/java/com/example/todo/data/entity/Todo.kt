@@ -5,9 +5,10 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 import java.util.Date
 
-
+@Serializable
 @Entity(tableName = "todo")
 data class Todo(
     @PrimaryKey(autoGenerate = true)  val id: Int = 0,
