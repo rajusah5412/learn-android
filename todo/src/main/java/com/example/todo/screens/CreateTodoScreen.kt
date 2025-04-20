@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,49 +42,52 @@ fun CreateTodoScreen(
     var content by remember { mutableStateOf("") }
 
     LaunchedEffect(todo) {
-        if(todo != null){
+        if (todo != null) {
             title = todo.title
             content = todo.content ?: ""
         }
     }
+    Scaffold {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Text(if(todo != null) "Edit Todo" else  "Create Todo", fontSize = 24.sp)
-        Spacer(Modifier.size(30.dp))
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("title") })
-        Spacer(Modifier.size(20.dp))
-        OutlinedTextField(
-            value = content,
-            onValueChange = { content = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Content") },
-            maxLines = 10,
-            minLines = 10
-        )
-        Spacer(Modifier.size(50.dp))
-        OutlinedButton(onClick = {
-            scope.launch {
-                val save =
-                    todo?.copy(title = title, content = content) ?: Todo(title = title, content = content)
-                createTodo(save)
-                navigateToList()
+            Text(if (todo != null) "Edit Todo" else "Create Todo", fontSize = 24.sp)
+            Spacer(Modifier.size(30.dp))
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("title") })
+            Spacer(Modifier.size(20.dp))
+            OutlinedTextField(
+                value = content,
+                onValueChange = { content = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Content") },
+                maxLines = 10,
+                minLines = 10
+            )
+            Spacer(Modifier.size(50.dp))
+            OutlinedButton(onClick = {
+                scope.launch {
+                    val save =
+                        todo?.copy(title = title, content = content) ?: Todo(
+                            title = title,
+                            content = content
+                        )
+                    createTodo(save)
+                    navigateToList()
+                }
+            }) {
+                Text(if (todo != null) "Update" else "Create")
             }
-        }) {
-            Text(if (todo != null) "Update" else "Create")
+
         }
-
-
-//        DatePickerModalInput(onDateSelected = {}, onDismiss = {})
     }
+
 }

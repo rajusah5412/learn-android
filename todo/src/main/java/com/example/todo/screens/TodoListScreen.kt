@@ -11,11 +11,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -30,15 +34,21 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -50,7 +60,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -75,50 +88,84 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListScreen(
-    vm: TodoViewModel, navigateToDetail: (Int) -> Unit = {}, navigateToCreate: (Todo?) -> Unit = {},
-    navigateToSearch : () -> Unit = {}
+    vm: TodoViewModel,
+    navigateToDetail: (Int) -> Unit = {},
+    navigateToCreate: (Todo?) -> Unit = {},
+    navigateToSearch: () -> Unit = {}
 ) {
 
-    Scaffold(
-        topBar = {
-            TodoSearchAppBar(navigateToSearch = navigateToSearch)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    ModalNavigationDrawer(
+        drawerState = drawerState, drawerContent = {
+            ModalDrawerSheet {
+                Text("Drawer title", modifier = Modifier.padding(16.dp))
+                HorizontalDivider()
+                NavigationDrawerItem(
+                    label = { Text(text = "Drawer Item") },
+                    selected = false,
+                    onClick = { /*TODO*/ })
+            }
         },
-        floatingActionButton = {
+    ) {
+
+        var showActionBar by remember { mutableStateOf(false) }
+        Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+            TodoSearchAppBar(
+                navigateToSearch = navigateToSearch, modifier = Modifier.statusBarsPadding(),
+                leadingAction = {
+                    scope.launch {
+                        if (drawerState.isOpen) {
+                            drawerState.close()
+                        } else {
+                            drawerState.open()
+                        }
+                    }
+                }
+            )
+        }, floatingActionButton = {
             FloatingActionButton(onClick = {
                 navigateToCreate(null)
             }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
             }
-        }
-    ) {
-        var showActionBar by remember { mutableStateOf(false) }
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-            verticalItemSpacing = 6.dp,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
+        }) {
+            LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                verticalItemSpacing = 6.dp,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
 
-            items(vm.todos) { todo ->
 
-                TodoItem(todo = todo, onItemClick = navigateToDetail, toggleActionBar = {
-                    showActionBar = true
-                })
+                items(vm.todos) { todo ->
+
+                    TodoItem(todo = todo, onItemClick = navigateToDetail, toggleActionBar = {
+                        showActionBar = true
+                    })
+                }
+            }
+
+
 //                TodoAction(todo = todo, isComplete = todo.isCompleted, updateCompleted = {
 //                    vm.markCompleted(todo)
 //                }, navigateToUpdate = { navigateToCreate(todo) }, delete = vm::deleteTodo)
-            }
-
         }
+
     }
 }
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TodoItem(modifier: Modifier = Modifier, todo: Todo, onItemClick: (Int) -> Unit, toggleActionBar: () -> Unit) {
+fun TodoItem(
+    modifier: Modifier = Modifier,
+    todo: Todo,
+    onItemClick: (Int) -> Unit,
+    toggleActionBar: () -> Unit
+) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     Card(
         modifier = modifier
@@ -135,7 +182,8 @@ fun TodoItem(modifier: Modifier = Modifier, todo: Todo, onItemClick: (Int) -> Un
             .draggable(
                 state = rememberDraggableState { delta -> offsetX += delta },
                 orientation = Orientation.Horizontal,
-            )) {
+            )
+    ) {
         Column(modifier = Modifier.padding(6.dp)) {
 
             Text(
@@ -151,7 +199,8 @@ fun TodoItem(modifier: Modifier = Modifier, todo: Todo, onItemClick: (Int) -> Un
             )
             Text(
                 todo.createDate.toLocalDateTime(timeZone = TimeZone.of("Asia/Kathmandu")).date.toString(),
-                fontSize = 12.sp, fontWeight = FontWeight.Medium
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
             )
 
             if (todo.content != null) {
@@ -204,9 +253,10 @@ fun TodoAction(
 
         })
         Icon(
-            imageVector = Icons.Default.Edit, "edit", tint = Color.Green,
-            modifier = Modifier.clickable { navigateToUpdate() }
-        )
+            imageVector = Icons.Default.Edit,
+            "edit",
+            tint = Color.Green,
+            modifier = Modifier.clickable { navigateToUpdate() })
         Icon(
             imageVector = Icons.Default.Delete,
             "delete",
@@ -220,5 +270,11 @@ fun TodoAction(
 @Preview(showBackground = true)
 @Composable
 private fun BasicText() {
-    BasicTextField("hello", onValueChange = {}, decorationBox = { it -> Row(modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)) { it() }})
+    BasicTextField("hello", onValueChange = {}, decorationBox = { it ->
+        Row(
+            modifier = Modifier.padding(
+                horizontal = 4.dp, vertical = 2.dp
+            )
+        ) { it() }
+    })
 }

@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -24,27 +27,30 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TodoSearchScreen(modifier: Modifier = Modifier) {
-    Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ){
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button")
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(modifier.statusBarsPadding()) {
+            Row(
+                Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ){
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button")
 //        Spacer(Modifier.size(width = 8.dp, height = 0.dp))
-            TextField(
-                "",
-                onValueChange = {},
-                placeholder = { Text("Search Todo Here") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {},
-                trailingIcon = {
-                    Icon(Icons.Default.Clear, "clear")
-                }
-            )
+                TextField(
+                    "",
+                    onValueChange = {},
+                    placeholder = { Text("Search Todo Here") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {},
+                    trailingIcon = {
+                        Icon(Icons.Default.Clear, "clear")
+                    }
+                )
+            }
         }
     }
+
 
 }
 

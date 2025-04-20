@@ -1,6 +1,8 @@
 package com.example.todo.ui.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.MutableCreationExtras
@@ -44,7 +46,7 @@ fun AppNav(navController: NavHostController, viewModel: TodoViewModel) {
         }
         composable<CreateTodo> { navBackStackEntry ->
             val id = navBackStackEntry.toRoute<CreateTodo>().id
-            if(id != null)
+            if (id != null)
                 viewModel.getById(id)
             val todo = viewModel.todo.collectAsStateWithLifecycle()
             CreateTodoScreen(createTodo = viewModel::createOrUpdate, todo = todo.value) {
@@ -61,7 +63,7 @@ fun AppNav(navController: NavHostController, viewModel: TodoViewModel) {
         }
 
         composable<SearchBar> {
-            TodoSearchScreen()
+            TodoSearchScreen(modifier = Modifier.fillMaxSize())
         }
     }
 }
