@@ -11,12 +11,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import androidx.navigation.toRoute
 import com.example.todo.CreateTodo
+import com.example.todo.SearchBar
 import com.example.todo.TodoDetail
 import com.example.todo.TodoList
 import com.example.todo.data.AppDatabase
 import com.example.todo.screens.CreateTodoScreen
 import com.example.todo.screens.TodoDetailScreen
 import com.example.todo.screens.TodoListScreen
+import com.example.todo.screens.TodoSearchScreen
 import com.example.todo.viewmodel.TodoRepository
 import com.example.todo.viewmodel.TodoViewModel
 
@@ -52,6 +54,10 @@ fun AppNav(navController: NavHostController, viewModel: TodoViewModel) {
         composable<TodoDetail> { entry ->
             val id = entry.toRoute<TodoDetail>().id
             TodoDetailScreen(id = id)
+        }
+
+        composable<SearchBar> {
+            TodoSearchScreen()
         }
     }
 }

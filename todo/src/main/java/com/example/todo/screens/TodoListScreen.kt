@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todo.CreateTodo
 import com.example.todo.data.entity.Todo
+import com.example.todo.ui.components.TodoSearchAppBar
 import com.example.todo.ui.theme.Inter
 import com.example.todo.ui.theme.PoetSenOne
 import com.example.todo.viewmodel.TodoViewModel
@@ -79,9 +80,7 @@ fun TodoListScreen(
 
     Scaffold(
         topBar = {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
-                BasicText()
-            }
+            TodoSearchAppBar()
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {

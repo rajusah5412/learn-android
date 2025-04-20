@@ -64,6 +64,8 @@ data class CreateTodo(val id: Int? = null)
 
 @Serializable
 data class TodoDetail(val id: Int)
+@Serializable
+object SearchBar
 
 
 //fun main(){
