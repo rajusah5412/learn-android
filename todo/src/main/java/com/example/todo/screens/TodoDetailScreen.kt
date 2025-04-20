@@ -4,7 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,38 +25,46 @@ import com.example.todo.MyApplication
 import com.example.todo.data.entity.Todo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaInstant
+import kotlinx.datetime.toLocalDateTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoDetailScreen(modifier: Modifier = Modifier, id: Int? = null) {
 
     var todo by remember { mutableStateOf<Todo?>(null) }
-    Column(
-        modifier.fillMaxSize(),
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Detail") })
+    }) {
+        Column(
+            modifier
+                .fillMaxSize()
+                .padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
 
+            LaunchedEffect(Unit) {
+                launch(Dispatchers.Default) {
+                    todo = MyApplication.database.todoDao().findById(id!!)
+                }
+            }
 
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        LaunchedEffect(Unit) {
-           launch (Dispatchers.Default){
-               todo = MyApplication.database.todoDao().findById(id!!)
-           }
-        }
-
-        if (todo != null) {
-            Text(todo!!.title, fontSize = 25.sp)
-            Text(todo!!.createDate.toString(), fontSize = 10.sp)
-            Text(
-                todo!!.content ?: "",
-                fontSize = 20.sp,
-                textAlign = TextAlign.Justify,
-                modifier = Modifier.background(color = Color.Magenta)
-            )
-
+            if (todo != null) {
+                Text(todo!!.title, fontSize = 18.sp)
+                Text(
+                    todo!!.createDate.toLocalDateTime(TimeZone.of("Asia/Kathmandu")).date.toString(),
+                    fontSize = 12.sp
+                )
+                Text(
+                    todo!!.content ?: "",
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Justify,
+                    lineHeight = 24.sp,
+                )
+            }
         }
     }
-
 }
 
 
