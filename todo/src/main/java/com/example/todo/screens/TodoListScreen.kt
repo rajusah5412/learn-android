@@ -75,12 +75,13 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListScreen(
-    vm: TodoViewModel, navigateToDetail: (Int) -> Unit = {}, navigateToCreate: (Todo?) -> Unit = {}
+    vm: TodoViewModel, navigateToDetail: (Int) -> Unit = {}, navigateToCreate: (Todo?) -> Unit = {},
+    navigateToSearch : () -> Unit = {}
 ) {
 
     Scaffold(
         topBar = {
-            TodoSearchAppBar()
+            TodoSearchAppBar(navigateToSearch = navigateToSearch)
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {

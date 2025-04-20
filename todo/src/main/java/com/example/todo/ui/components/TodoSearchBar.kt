@@ -26,6 +26,8 @@ fun TodoSearchAppBar(modifier: Modifier = Modifier, navigateToSearch: () -> Unit
         Icon(Icons.Default.Menu, contentDescription = "menu")
         TextField(
             "",
+            readOnly = true,
+            enabled = false,
             onValueChange = {},
             placeholder = { Text("Search Todo Here") },
             modifier = Modifier.fillMaxWidth().clickable{

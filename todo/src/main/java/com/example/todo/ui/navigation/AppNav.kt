@@ -36,7 +36,11 @@ fun AppNav(navController: NavHostController, viewModel: TodoViewModel) {
                     navController.navigate(TodoDetail(todoId))
                 }, navigateToCreate = {
                     navController.navigate(CreateTodo(it?.id))
-                })
+                },
+                navigateToSearch = {
+                    navController.navigate(SearchBar)
+                }
+            )
         }
         composable<CreateTodo> { navBackStackEntry ->
             val id = navBackStackEntry.toRoute<CreateTodo>().id
