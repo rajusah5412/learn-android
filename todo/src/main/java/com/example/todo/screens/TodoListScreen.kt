@@ -97,12 +97,25 @@ fun TodoListScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
-        drawerState = drawerState, drawerContent = {
+        drawerState = drawerState,
+        drawerContent = {
             ModalDrawerSheet {
                 Text("Drawer title", modifier = Modifier.padding(16.dp))
                 HorizontalDivider()
                 NavigationDrawerItem(
                     label = { Text(text = "Drawer Item") },
+                    selected = false,
+                    onClick = { /*TODO*/ })
+                NavigationDrawerItem(
+                    label = { Text(text = "Drawer Item") },
+                    selected = false,
+                    onClick = { /*TODO*/ })
+                NavigationDrawerItem(
+                    label = { Text(text = "Drawer Item") },
+                    selected = false,
+                    onClick = { /*TODO*/ })
+                NavigationDrawerItem(
+                    label = { Text(text = "Settings") },
                     selected = false,
                     onClick = { /*TODO*/ })
             }
@@ -134,7 +147,8 @@ fun TodoListScreen(
                 columns = StaggeredGridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(it)
+                    .padding(8.dp),
                 verticalItemSpacing = 6.dp,
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
@@ -142,9 +156,10 @@ fun TodoListScreen(
 
                 items(vm.todos) { todo ->
 
-                    TodoItem(todo = todo, onItemClick = navigateToDetail, toggleActionBar = {
-                        showActionBar = true
-                    })
+                    TodoItem(
+                        todo = todo, onItemClick = navigateToDetail, toggleActionBar = {
+                            showActionBar = true
+                        })
                 }
             }
 
