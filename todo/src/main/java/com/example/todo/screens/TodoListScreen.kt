@@ -9,21 +9,12 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -45,8 +36,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -59,11 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -71,12 +56,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.todo.CreateTodo
 import com.example.todo.data.entity.Todo
+import com.example.todo.ui.components.TodoActionBar
 import com.example.todo.ui.components.TodoSearchAppBar
 import com.example.todo.ui.theme.Inter
-import com.example.todo.ui.theme.PoetSenOne
 import com.example.todo.viewmodel.TodoViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -123,19 +106,33 @@ fun TodoListScreen(
     ) {
 
         var showActionBar by remember { mutableStateOf(false) }
+        var todoToEdit by remember { mutableStateOf<Todo?>(null) }
         Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-            TodoSearchAppBar(
-                navigateToSearch = navigateToSearch, modifier = Modifier.statusBarsPadding(),
-                leadingAction = {
-                    scope.launch {
-                        if (drawerState.isOpen) {
-                            drawerState.close()
-                        } else {
-                            drawerState.open()
+            if(!showActionBar){
+                TodoSearchAppBar(
+                    navigateToSearch = navigateToSearch, modifier = Modifier.statusBarsPadding(),
+                    leadingAction = {
+                        scope.launch {
+                            if (drawerState.isOpen) {
+                                drawerState.close()
+                            } else {
+                                drawerState.open()
+                            }
                         }
                     }
-                }
-            )
+                )
+            }else {
+                TodoActionBar(
+                    todo = todoToEdit,
+                    modifier =  Modifier.fillMaxWidth(),
+                    onClear = { showActionBar = false },
+                    onDelete = {
+                        val x = it
+                        vm::deleteTodo
+                    }
+                )
+            }
+
         }, floatingActionButton = {
             FloatingActionButton(onClick = {
                 navigateToCreate(null)
@@ -157,7 +154,8 @@ fun TodoListScreen(
                 items(vm.todos) { todo ->
 
                     TodoItem(
-                        todo = todo, onItemClick = navigateToDetail, toggleActionBar = {
+                        todo = todo, onItemClick = navigateToDetail, toggleActionBar = { todo ->
+                            todoToEdit = todo
                             showActionBar = true
                         })
                 }
@@ -179,7 +177,7 @@ fun TodoItem(
     modifier: Modifier = Modifier,
     todo: Todo,
     onItemClick: (Int) -> Unit,
-    toggleActionBar: () -> Unit
+    toggleActionBar: (Todo) -> Unit
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     Card(
@@ -189,7 +187,7 @@ fun TodoItem(
                     onItemClick(todo.id)
                 },
                 onLongClick = {
-                    toggleActionBar()
+                    toggleActionBar(todo)
                 },
                 onDoubleClick = {},
             )

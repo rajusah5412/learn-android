@@ -1,0 +1,64 @@
+package com.example.todo.ui.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.todo.data.entity.Todo
+
+typealias ClickLambda = () -> Unit
+
+@Composable
+fun TodoActionBar(
+    modifier: Modifier = Modifier,
+    todo: Todo? = null,
+    onClear: ClickLambda = {},
+    onEdit: (Todo) -> Unit = {},
+    onDelete: (Todo) -> Unit = {},
+    onShare: ClickLambda = {},
+    onComplete: ClickLambda = {}
+
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween, modifier = modifier
+    ) {
+        IconButton(onClick = onClear) {
+            Icon(imageVector = Icons.Default.Clear, "clear")
+        }
+        Row {
+            IconButton(onClick = {
+                onEdit(todo!!)
+            }) {
+                Icon(imageVector = Icons.Default.Edit, "edit")
+
+            }
+            IconButton(onClick = onShare) {
+                Icon(imageVector = Icons.Default.Share, "share")
+
+            }
+            IconButton(onClick = { onDelete(todo!!)}) {
+                Icon(imageVector = Icons.Default.Delete, "delete")
+
+            }
+            IconButton(onClick = onComplete) {
+                Icon(imageVector = Icons.Default.Check, "check")
+
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TodoActionBarPreview() {
+    TodoActionBar()
+}
