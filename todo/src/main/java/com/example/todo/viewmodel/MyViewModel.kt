@@ -1,6 +1,10 @@
 package com.example.todo.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -16,7 +20,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TodoViewModel(val greeting: String, val repo: TodoRepository) : ViewModel() {
-
+    var todoToEdit by  mutableStateOf<Todo?>(null)
+       private set
     val todos = mutableStateListOf<Todo>()
     private val _todo = MutableStateFlow<Todo?>(null)
     val todo: StateFlow<Todo?> = _todo
@@ -24,6 +29,10 @@ class TodoViewModel(val greeting: String, val repo: TodoRepository) : ViewModel(
 
     init {
         getAllTodos()
+    }
+
+    fun updateSelectedTodo(selectTodo: Todo){
+        todoToEdit = selectTodo
     }
 
     fun createOrUpdate(todo: Todo) {
@@ -44,9 +53,9 @@ class TodoViewModel(val greeting: String, val repo: TodoRepository) : ViewModel(
         }
     }
 
-    fun deleteTodo(todo: Todo) {
+    fun deleteTodo(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.delete(todo)
+            repo.delete(id)
             getAllTodos()
         }
     }
@@ -93,7 +102,7 @@ class TodoRepository(private val todoDao: TodoDao) {
         todoDao.upsert(todo)
     }
 
-    suspend fun delete(todo: Todo) {
-        todoDao.delete(todo)
+    suspend fun delete(id: Int) {
+        todoDao.delete(id)
     }
 }

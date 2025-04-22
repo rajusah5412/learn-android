@@ -23,7 +23,7 @@ fun TodoActionBar(
     todo: Todo? = null,
     onClear: ClickLambda = {},
     onEdit: (Todo) -> Unit = {},
-    onDelete: (Todo) -> Unit = {},
+    onDelete: (id: Int) -> Unit = {},
     onShare: ClickLambda = {},
     onComplete: ClickLambda = {}
 
@@ -43,9 +43,10 @@ fun TodoActionBar(
             }
             IconButton(onClick = onShare) {
                 Icon(imageVector = Icons.Default.Share, "share")
-
             }
-            IconButton(onClick = { onDelete(todo!!)}) {
+            IconButton(onClick = {
+                onDelete(todo!!.id)})
+            {
                 Icon(imageVector = Icons.Default.Delete, "delete")
 
             }

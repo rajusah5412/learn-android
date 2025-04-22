@@ -1,5 +1,6 @@
 package com.example.todo.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -23,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DrawerValue
@@ -44,6 +47,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -105,10 +109,11 @@ fun TodoListScreen(
         },
     ) {
 
-        var showActionBar by remember { mutableStateOf(false) }
-        var todoToEdit by remember { mutableStateOf<Todo?>(null) }
+        var showActionBar by rememberSaveable { mutableStateOf(false) }
+
+        var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
         Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-            if(!showActionBar){
+            if (!showActionBar) {
                 TodoSearchAppBar(
                     navigateToSearch = navigateToSearch, modifier = Modifier.statusBarsPadding(),
                     leadingAction = {
@@ -121,15 +126,13 @@ fun TodoListScreen(
                         }
                     }
                 )
-            }else {
+            } else {
                 TodoActionBar(
-                    todo = todoToEdit,
-                    modifier =  Modifier.fillMaxWidth(),
+                    todo = vm.todoToEdit,
+                    modifier = Modifier.fillMaxWidth(),
                     onClear = { showActionBar = false },
-                    onDelete = {
-                        val x = it
-                        vm::deleteTodo
-                    }
+                    onDelete = { showConfirmationDialog = true }
+
                 )
             }
 
@@ -140,6 +143,29 @@ fun TodoListScreen(
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
             }
         }) {
+            if (showConfirmationDialog) {
+                AlertDialog(
+                    title = { Text("Delete now?") },
+                    text = { Text("Are you sure you want to delete the item?") },
+                    confirmButton = {
+                        Button(onClick = {
+                            vm.deleteTodo(vm.todoToEdit!!.id)
+                            showConfirmationDialog = false
+                        }) {
+                            Text("Yes")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = {
+                            showConfirmationDialog = false
+                        }) {
+                            Text("No")
+                        }
+                    },
+                    onDismissRequest = {
+                        showConfirmationDialog = false
+                    })
+            }
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),
                 modifier = Modifier
@@ -154,8 +180,11 @@ fun TodoListScreen(
                 items(vm.todos) { todo ->
 
                     TodoItem(
-                        todo = todo, onItemClick = navigateToDetail, toggleActionBar = { todo ->
-                            todoToEdit = todo
+                        todo = todo,
+                        showBorder = vm.todoToEdit?.id == todo.id,
+                        onItemClick = navigateToDetail,
+                        toggleActionBar = { todo ->
+                            vm.updateSelectedTodo(todo)
                             showActionBar = true
                         })
                 }
@@ -176,15 +205,18 @@ fun TodoListScreen(
 fun TodoItem(
     modifier: Modifier = Modifier,
     todo: Todo,
+    showBorder: Boolean = false,
     onItemClick: (Int) -> Unit,
     toggleActionBar: (Todo) -> Unit
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     Card(
+        border = if (showBorder) BorderStroke(2.dp, Color.Red) else null,
         modifier = modifier
             .combinedClickable(
                 onClick = {
-                    onItemClick(todo.id)
+                    if(!showBorder)
+                        onItemClick(todo.id)
                 },
                 onLongClick = {
                     toggleActionBar(todo)
