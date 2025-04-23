@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TodoViewModel(val greeting: String, val repo: TodoRepository) : ViewModel() {
-    var todoToEdit by  mutableStateOf<Todo?>(null)
+    var todoToEdit =  mutableStateListOf<Todo>()
        private set
     val todos = mutableStateListOf<Todo>()
     private val _todo = MutableStateFlow<Todo?>(null)
@@ -32,8 +32,15 @@ class TodoViewModel(val greeting: String, val repo: TodoRepository) : ViewModel(
     }
 
     fun updateSelectedTodo(selectTodo: Todo){
-        todoToEdit = selectTodo
+        todoToEdit.add(selectTodo)
     }
+
+    fun clearSelectedTodos() = todoToEdit.clear()
+    
+    fun removeSelectedTod(todo: Todo) {
+        todoToEdit.remove(todo)
+    }
+
 
     fun createOrUpdate(todo: Todo) {
         viewModelScope.launch(Dispatchers.IO) {

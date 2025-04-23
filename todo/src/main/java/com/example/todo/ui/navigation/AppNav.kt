@@ -40,7 +40,11 @@ fun AppNav(navController: NavHostController, viewModel: TodoViewModel) {
                     navController.navigate(CreateTodo(it?.id))
                 },
                 navigateToSearch = {
-                    navController.navigate(SearchBar)
+                    navController.navigate(SearchBar, navOptions {
+                        popUpTo<TodoList>(){
+                            inclusive = true
+                        }
+                    })
                 }
             )
         }
