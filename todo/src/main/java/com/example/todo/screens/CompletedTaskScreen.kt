@@ -1,5 +1,3 @@
-package com.example.todo.screens
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,12 +38,11 @@ import kotlinx.coroutines.launch
 //@Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoListScreen(
+fun CompletedTaskScreen(
     vm: TodoViewModel,
     navigateToDetail: (Int) -> Unit = {},
     navigateToCreate: (Todo?) -> Unit = {},
-    navigateToSearch: () -> Unit = {},
-    navigateToCompleted: () -> Unit ={}
+    navigateToSearch: () -> Unit = {}
 ) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -105,8 +102,7 @@ fun TodoListScreen(
                     onDelete = { showConfirmationDialog = true },
                     onEdit = {
                         navigateToCreate(it)
-                    },
-                    onComplete = navigateToCompleted
+                    }
 
                 )
             }

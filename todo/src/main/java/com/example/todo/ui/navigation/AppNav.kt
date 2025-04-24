@@ -1,5 +1,6 @@
 package com.example.todo.ui.navigation
 
+import CompletedTaskScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import androidx.navigation.toRoute
+import com.example.todo.CompletedTask
 import com.example.todo.CreateTodo
 import com.example.todo.SearchBar
 import com.example.todo.TodoDetail
@@ -41,7 +43,28 @@ fun AppNav(navController: NavHostController, viewModel: TodoViewModel) {
                 },
                 navigateToSearch = {
                     navController.navigate(SearchBar, navOptions {
-                        popUpTo<TodoList>(){
+                        popUpTo<TodoList>() {
+                            inclusive = true
+                        }
+                    })
+                },
+                navigateToCompleted = {
+                    //
+                    navController.navigate(CompletedTask)
+                }
+            )
+        }
+        composable<CompletedTask> {
+            CompletedTaskScreen(
+                viewModel,
+                navigateToDetail = { todoId ->
+                    navController.navigate(TodoDetail(todoId))
+                }, navigateToCreate = {
+                    navController.navigate(CreateTodo(it?.id))
+                },
+                navigateToSearch = {
+                    navController.navigate(SearchBar, navOptions {
+                        popUpTo<TodoList>() {
                             inclusive = true
                         }
                     })
@@ -53,13 +76,19 @@ fun AppNav(navController: NavHostController, viewModel: TodoViewModel) {
             if (id != null)
                 viewModel.getById(id)
             val todo = viewModel.todo.collectAsStateWithLifecycle()
-            CreateTodoScreen(createTodo = viewModel::createOrUpdate, todo = todo.value) {
-                navController.navigate(TodoList, navOptions = navOptions {
-                    popUpTo<TodoList>() {
-                        inclusive = true
-                    }
+            CreateTodoScreen(
+                createTodo = viewModel::createOrUpdate,
+                todo = todo.value,
+                navigateToList = {
+                    navController.navigate(TodoList, navOptions = navOptions {
+                        popUpTo<TodoList>() {
+                            inclusive = true
+                        }
+                    })
+                },
+                clear = {
+                    viewModel.clearSelectedTodos()
                 })
-            }
         }
         composable<TodoDetail> { entry ->
             val id = entry.toRoute<TodoDetail>().id

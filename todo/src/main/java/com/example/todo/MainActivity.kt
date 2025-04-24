@@ -51,6 +51,9 @@ data class TodoDetail(val id: Int)
 @Serializable
 object SearchBar
 
+@Serializable
+object CompletedTask
+
 
 //fun main(){
 //    val instant = Clock.System.now()

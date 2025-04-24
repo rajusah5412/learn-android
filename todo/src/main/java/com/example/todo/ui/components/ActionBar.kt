@@ -42,7 +42,7 @@ fun TodoActionBar(
         Row {
             if(selectedTodos.size == 1){
                 IconButton(onClick = {
-//                onEdit(todo!!)
+                onEdit(selectedTodos[0]!!)
                 }) {
                     Icon(imageVector = Icons.Default.Edit, "edit")
 

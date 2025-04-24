@@ -34,6 +34,7 @@ fun CreateTodoScreen(
     todo: Todo? = null,
     createTodo: (Todo) -> Unit = {},
     navigateToList: () -> Unit = {},
+    clear: () -> Unit = {}
 ) {
 
     val scope = rememberCoroutineScope()
@@ -51,7 +52,8 @@ fun CreateTodoScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(it),
+                .padding(it)
+                .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -81,6 +83,7 @@ fun CreateTodoScreen(
                             content = content
                         )
                     createTodo(save)
+                    clear()
                     navigateToList()
                 }
             }) {
