@@ -100,3 +100,21 @@ fun AppNav(navController: NavHostController, viewModel: TodoViewModel) {
         }
     }
 }
+
+interface IDownload{
+    fun download()
+}
+
+class MyDownload : IDownload{
+    override fun download(){
+
+    }
+}
+
+class MySecondDownload : IDownload{
+    override fun download() {
+        TODO("Not yet implemented")
+    }
+
+}
+
