@@ -11,6 +11,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/customscaffold" />
+            <option value="$PROJECT_DIR$/networking" />
             <option value="$PROJECT_DIR$/snackbar" />
             <option value="$PROJECT_DIR$/storage" />
             <option value="$PROJECT_DIR$/todo" />
